@@ -40,6 +40,7 @@ public final class RuleParamType {
   public static final RuleParamType BOOLEAN = new RuleParamType("BOOLEAN");
   public static final RuleParamType INTEGER = new RuleParamType("INTEGER");
   public static final RuleParamType FLOAT = new RuleParamType("FLOAT");
+  public static final RuleParamType KEY_VALUE_MAP = new RuleParamType("KEY_VALUE_MAP");
 
   private static final String VALUES_PARAM = "values";
   private static final String MULTIPLE_PARAM = "multiple";
@@ -124,6 +125,9 @@ public final class RuleParamType {
     if (s.startsWith("s[")) {
       String values = StringUtils.substringBetween(s, "[", "]");
       return multipleListOfValues(StringUtils.split(values, ','));
+    }
+    if ("KEY_VALUE_MAP".equals(s)) {
+      return KEY_VALUE_MAP;
     }
 
     // standard format
