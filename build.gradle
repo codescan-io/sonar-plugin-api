@@ -20,20 +20,7 @@ allprojects {
   }
 
   repositories {
-   def repository = project.hasProperty('qa') ? 'sonarsource-qa' : 'sonarsource'
-    maven {
-      url "https://repox.jfrog.io/repox/${repository}"
-      // The environment variables ARTIFACTORY_PRIVATE_USERNAME and ARTIFACTORY_PRIVATE_PASSWORD are used on QA env (Jenkins)
-      // On local box, please add artifactoryUsername and artifactoryPassword to ~/.gradle/gradle.properties
-      def artifactoryUsername = System.env.'ARTIFACTORY_USER' ?: (project.hasProperty('artifactoryUsername') ? project.getProperty('artifactoryUsername') : '')
-      def artifactoryPassword = System.env.'ARTIFACTORY_PWD' ?: (project.hasProperty('artifactoryPassword') ? project.getProperty('artifactoryPassword') : '')
-      if (artifactoryUsername && artifactoryPassword) {
-        credentials {
-          username = artifactoryUsername
-          password = artifactoryPassword
-        }
-      }
-    }
+    mavenCentral()
   }
 
   artifactory {
