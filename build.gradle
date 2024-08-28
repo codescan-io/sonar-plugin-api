@@ -21,6 +21,7 @@ allprojects {
 
   repositories {
    def repository = project.hasProperty('qa') ? 'sonarsource-qa' : 'sonarsource'
+    mavenCentral()
     maven {
       url "https://repox.jfrog.io/repox/${repository}"
       // The environment variables ARTIFACTORY_PRIVATE_USERNAME and ARTIFACTORY_PRIVATE_PASSWORD are used on QA env (Jenkins)
