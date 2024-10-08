@@ -42,7 +42,8 @@ public interface Issue extends Serializable {
    * is truncated to 4_000 / 3 (maximum bytes per UTF-8 character)
    * = 1_333 characters.
    */
-  int MESSAGE_MAX_SIZE = 1_333;
+  /* Limit increased to allow detailed issue message*/
+  int MESSAGE_MAX_SIZE = 2700;
 
   /**
    * Default status when creating an issue.
@@ -116,6 +117,8 @@ public interface Issue extends Serializable {
   @Deprecated(since = "10.4")
   String RESOLUTION_ACKNOWLEDGED = "ACKNOWLEDGED";
 
+  String RESOLUTION_EXCEPTION = "EXCEPTION";
+
   /**
    * @deprecated since 10.4 in favor of {@link IssueStatus}
    */
@@ -127,7 +130,7 @@ public interface Issue extends Serializable {
    * @deprecated since 10.4 as Security Hotspot are deprecated
    */
   @Deprecated(since = "10.4")
-  List<String> SECURITY_HOTSPOT_RESOLUTIONS = List.of(RESOLUTION_FIXED, RESOLUTION_SAFE, RESOLUTION_ACKNOWLEDGED);
+  List<String> SECURITY_HOTSPOT_RESOLUTIONS = List.of(RESOLUTION_FIXED, RESOLUTION_SAFE, RESOLUTION_ACKNOWLEDGED, RESOLUTION_EXCEPTION);
 
   /**
    * @deprecated since 10.4 as Security Hotspot are deprecated

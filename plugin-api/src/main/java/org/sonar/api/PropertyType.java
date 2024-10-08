@@ -94,5 +94,10 @@ public enum PropertyType {
    * Email address
    * @since 10.2
    */
-  EMAIL
+  EMAIL,
+
+  /**
+   * Key Value Map
+   */
+  KEY_VALUE_MAP
 }
