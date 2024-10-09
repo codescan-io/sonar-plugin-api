@@ -90,6 +90,8 @@ public interface DefaultTransitions {
    */
   String RESET_AS_TO_REVIEW = "resetastoreview";
 
+  String RESOLVE_AS_EXCEPTION = "resolveasexception";
+
   /**
    * @since 4.4
    */
