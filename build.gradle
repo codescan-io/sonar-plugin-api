@@ -21,6 +21,7 @@ allprojects {
 
   repositories {
    def repository = project.hasProperty('qa') ? 'sonarsource-qa' : 'sonarsource'
+    mavenLocal()
     mavenCentral()
     maven {
       url "https://repox.jfrog.io/repox/${repository}"
