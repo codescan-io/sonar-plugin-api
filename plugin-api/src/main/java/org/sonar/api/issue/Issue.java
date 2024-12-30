@@ -70,6 +70,7 @@ public interface Issue extends Serializable {
   /**
    * @deprecated since 10.4 in favor of {@link IssueStatus}
    */
+  @Deprecated(since = "10.4")
   String STATUS_CLOSED = "CLOSED";
   /**
    * @deprecated since 10.4 in favor of {@link IssueStatus}
@@ -177,9 +178,7 @@ public interface Issue extends Serializable {
 
   /**
    * See constants in {@link org.sonar.api.rule.Severity}.
-   * @deprecated since 10.1
    */
-  @Deprecated(since = "10.1")
   @CheckForNull
   String severity();
 

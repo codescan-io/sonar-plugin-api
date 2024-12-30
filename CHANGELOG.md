@@ -1,5 +1,18 @@
 # Changelog
 
+## 10.14
+
+* Remove deprecation on  `org.sonar.api.rules.RuleType`, `org.sonar.api.batch.rule.Severity`, `org.sonar.api.rule.Severity` and related usages.
+* Remove deprecation on `org.sonar.api.server.rule.internal.ImpactMapper` and `org.sonar.api.server.rule.RuleTagsToTypeConverter`.
+* Remove deprecation on metrics `org.sonar.api.measures.CoreMetrics.BLOCKER_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.CRITICAL_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.MAJOR_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.MINOR_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.INFO_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.NEW_BLOCKER_VIOLATIONS`, , `org.sonar.api.measures.CoreMetrics.NEW_CRITICAL_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.NEW_MAJOR_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.NEW_MINOR_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.NEW_INFO_VIOLATIONS`, `org.sonar.api.measures.CoreMetrics.CODE_SMELLS`, `org.sonar.api.measures.CoreMetrics.NEW_CODE_SMELLS`, `org.sonar.api.measures.CoreMetrics.BUGS`, `org.sonar.api.measures.CoreMetrics.NEW_BUGS`, `org.sonar.api.measures.CoreMetrics.VULNERABILITIES`, `org.sonar.api.measures.CoreMetrics.NEW_VULNERABILITIES`.
+* Deprecate `org.sonar.api.server.rule.internal.ImpactMapper.convertToDeprecatedSeverity`. Use `org.sonar.api.server.rule.internal.ImpactMapper.convertToRuleSeverity` instead.
+
+## 10.13
+* Deprecate `org.sonar.api.resources.Qualifiers` and `org.sonar.api.resources.Scopes`
+* Add a specialized `ConfigScope` enum on `org.sonar.api.config.PropertyDefinition`, and provide replacements for all `onQualifiers` methods accordingly
+* Change the name of `high_impact_accepted_issues` to `Blocker and High Severity Accepted Issues`
+* Deprecate metrics `org.sonar.api.measures.CoreMetrics.RELIABILITY_ISSUES`, `org.sonar.api.measures.CoreMetrics.MAINTAINABILITY_ISSUES`, `org.sonar.api.measures.CoreMetrics.SECURITY_ISSUES`, `org.sonar.api.measures.CoreMetrics.NEW_RELIABILITY_ISSUES`, `org.sonar.api.measures.CoreMetrics.NEW_MAINTAINABILITY_ISSUES` and `org.sonar.api.measures.CoreMetrics.NEW_SECURITY_ISSUES`  
+
 ## 10.11
 * Introduce new impact severities `org.sonar.api.issue.impact.Severity.INFO` and `org.sonar.api.issue.impact.Severity.BLOCKER`
 
