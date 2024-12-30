@@ -117,9 +117,6 @@ subprojects {
   tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:none', '-quiet')
     options.encoding = 'UTF-8'
-    doFirst {
-      options.addBooleanOption('-no-module-directories', true)
-    }
   }
 
   task sourcesJar(type: Jar, dependsOn: classes) {
