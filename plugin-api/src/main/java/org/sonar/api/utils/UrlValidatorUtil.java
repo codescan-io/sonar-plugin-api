@@ -20,11 +20,13 @@
 package org.sonar.api.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -127,6 +129,7 @@ public class UrlValidatorUtil {
 
         // Get hostname
         String host = url.getHost().toLowerCase();
+        if (checkIfInvalidIpAddress(host)) return false;
 
         // Check for suspicious keywords in URL
         for (String keyword : SUSPICIOUS_KEYWORDS) {
@@ -142,21 +145,20 @@ public class UrlValidatorUtil {
             }
         }
 
-        // Check if it's an IP address and if it's in a blocked range
-        if (isIpAddress(host) && isBlockedIpAddress(host)) {
+        // Initiate DNS resolution
+        try {
+            InetAddress inetAddress = InetAddress.getByName(host);
+            if (checkIfInvalidIpAddress(inetAddress.getHostAddress())) return false;
+        } catch (UnknownHostException e) {
             return false;
         }
 
-        // Check for port misuse (optional)
-        int port = url.getPort();
-        if (port != -1) {
-            // Example of blocked ports (customize as needed)
-            if (port == 22 || port == 445 || port == 25) {
-                return false;
-            }
-        }
-
         return true;
+    }
+
+    private static boolean checkIfInvalidIpAddress(String ipAddress) {
+        // Check if it's an IP address and if it's in a blocked range
+        return isIpAddress(ipAddress) && isBlockedIpAddress(ipAddress);
     }
 
     public static String sanitizeUrl(String url) {
