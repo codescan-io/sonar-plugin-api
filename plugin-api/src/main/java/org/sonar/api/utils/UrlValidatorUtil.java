@@ -42,18 +42,18 @@ public class UrlValidatorUtil {
     // List of blocked IP address patterns
     private static final List<Pattern> BLOCKED_IP_PATTERNS = Arrays.asList(
             // Private IP ranges
-            Pattern.compile("^10\\..*"),                      // 10.0.0.0/8
-            Pattern.compile("^172\\.(1[6-9]|2[0-9]|3[0-1])\\..*"), // 172.16.0.0/12
-            Pattern.compile("^192\\.168\\..*"),               // 192.168.0.0/16
+            Pattern.compile("^10\\..*"),                            // 10.0.0.0/8
+            Pattern.compile("^172\\.(1[6-9]|2[0-9]|3[0-1])\\..*"),  // 172.16.0.0/12
+            Pattern.compile("^192\\.168\\..*"),                     // 192.168.0.0/16
             // Localhost
-            Pattern.compile("^127\\..*"),                     // 127.0.0.0/8
+            Pattern.compile("^127\\..*"),                           // 127.0.0.0/8
             Pattern.compile("^0\\.0\\.0\\.0$"),
             // Link-local addresses
-            Pattern.compile("^169\\.254\\..*"),               // 169.254.0.0/16
+            Pattern.compile("^169\\.254\\..*"),                     // 169.254.0.0/16
             // Loop-back in IPv6
             Pattern.compile("^::1$"),
-            Pattern.compile("^[fF][cCdD]00:.*"),              // fc00::/7 (unique local addresses)
-            Pattern.compile("^[fF][eE]80:.*")                 // fe80::/10 (link-local addresses)
+            Pattern.compile("^[fF][cCdD]00:.*"),                    // fc00::/7 (unique local addresses)
+            Pattern.compile("^[fF][eE]80:.*")                       // fe80::/10 (link-local addresses)
     );
 
     // Pattern to extract URLs from text - Modified to support any protocol
@@ -89,6 +89,12 @@ public class UrlValidatorUtil {
             if (word.length() < 3)
                 continue; // "ftp" is 3 chars
             word = word.replaceAll("[,.!?;:'\")]$", "");
+
+            // Check for malicious patterns in each word
+            if (MALICIOUS_PATTERN.matcher(word).matches()){
+                return false;
+            }
+
             for (String protocol : PROTOCOLS) {
                 if (word.toLowerCase().startsWith(protocol)) {
                     if (!isUrlValid(word)) {

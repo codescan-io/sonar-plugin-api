@@ -58,6 +58,7 @@ public class UrlValidatorUtilTest {
         texts.put("This is a description. This shouldn't affect the output. https://uber.com/api/data", Boolean.TRUE);            	// Localhost (blocked)
         texts.put("The description can contain <a href=https://google.com/> and other links. Check if this is valid? http://127.0.0.1:8080/", Boolean.FALSE);            	// Localhost (blocked)
         texts.put("No URLs here!", Boolean.TRUE);
+        texts.put("<script>document.alert('sal')</script>", Boolean.FALSE);
         texts.put(null, Boolean.TRUE);
 
         for (String text : texts.keySet()) {
