@@ -580,6 +580,8 @@ public interface RulesDefinition {
      */
     public abstract NewRule addCwe(int... nums);
 
+    public abstract NewRule addCvss(double... nums);
+
     /**
      * @since 10.10
      */
