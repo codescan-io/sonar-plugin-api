@@ -366,6 +366,14 @@ class DefaultNewRule extends RulesDefinition.NewRule {
     }
     return this;
   }
+  @Override
+  public DefaultNewRule addCvss(double... nums) {
+    for (double num : nums) {
+      String standard = "cvss:" + num;
+      securityStandards.add(standard);
+    }
+    return this;
+  }
 
   @Override
   public DefaultNewRule addStig(StigVersion stigVersion, String... requirements) {
