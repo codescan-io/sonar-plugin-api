@@ -21,7 +21,7 @@ package org.sonar.api.security;
 
 import java.util.Collection;
 import javax.annotation.CheckForNull;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.sonar.api.server.http.HttpRequest;
 
 /**
