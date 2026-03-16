@@ -92,9 +92,11 @@ public interface DefaultTransitions {
 
   String RESOLVE_AS_EXCEPTION = "resolveasexception";
 
+  String EXCEPTION = "exception";
+
   /**
    * @since 4.4
    */
   List<String> ALL = List.of(CONFIRM, UNCONFIRM, REOPEN, RESOLVE, FALSE_POSITIVE, WONT_FIX, CLOSE,
-    SET_AS_IN_REVIEW, RESOLVE_AS_REVIEWED, RESET_AS_TO_REVIEW, ACCEPT);
+    SET_AS_IN_REVIEW, RESOLVE_AS_REVIEWED, RESET_AS_TO_REVIEW, ACCEPT,EXCEPTION);
 }

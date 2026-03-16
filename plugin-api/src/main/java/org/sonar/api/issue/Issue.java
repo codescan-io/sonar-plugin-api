@@ -120,12 +120,14 @@ public interface Issue extends Serializable {
 
   String RESOLUTION_EXCEPTION = "EXCEPTION";
 
+  String EXCEPTION= "EXCEPTION";
+
   /**
    * @deprecated since 10.4 in favor of {@link IssueStatus}
    */
   @Deprecated(since = "10.4")
   List<String> RESOLUTIONS = List.of(RESOLUTION_FALSE_POSITIVE, RESOLUTION_WONT_FIX, RESOLUTION_FIXED,
-    RESOLUTION_REMOVED);
+    RESOLUTION_REMOVED, EXCEPTION);
 
   /**
    * @deprecated since 10.4 as Security Hotspot are deprecated
