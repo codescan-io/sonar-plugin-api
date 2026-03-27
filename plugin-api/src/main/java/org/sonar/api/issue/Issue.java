@@ -120,7 +120,7 @@ public interface Issue extends Serializable {
 
   String RESOLUTION_EXCEPTION = "EXCEPTION";
 
-  String EXCEPTION= "EXCEPTION";
+  String EXCEPTION = "EXCEPTION";
 
   /**
    * @deprecated since 10.4 in favor of {@link IssueStatus}
