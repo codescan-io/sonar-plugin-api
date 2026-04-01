@@ -39,6 +39,7 @@ public enum IssueStatus {
   CONFIRMED,
   FALSE_POSITIVE,
   ACCEPTED,
+  EXCEPTION,
   FIXED;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(IssueStatus.class);
@@ -74,6 +75,9 @@ public enum IssueStatus {
           return IssueStatus.ACCEPTED;
         case Issue.RESOLUTION_FIXED:
           return IssueStatus.FIXED;
+        case Issue.EXCEPTION:
+          return IssueStatus.EXCEPTION;
+
         default:
       }
     }
