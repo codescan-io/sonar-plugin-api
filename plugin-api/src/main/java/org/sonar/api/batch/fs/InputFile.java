@@ -209,11 +209,11 @@ public interface InputFile extends IndexedFile {
   String toString();
 
   /**
-   * Dependency files of this file. If not null, files contain at least one usage of a method defined in this file.
+   * Reference files of this file. If not null, files contain at least one usage of a method defined in this file.
    *
-   * @return the dependency files, or {@code null} if none
+   * @return the reference files, or {@code null} if none
    */
-  default List<InputFile> getDependencyFiles() {
+  default List<InputFile> getReferenceFiles() {
     return null;
   }
 }
