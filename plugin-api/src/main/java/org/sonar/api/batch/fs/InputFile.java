@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 
@@ -206,4 +207,13 @@ public interface InputFile extends IndexedFile {
    */
   @Override
   String toString();
+
+  /**
+   * Reference files of this file. If not null, files contain at least one usage of a method defined in this file.
+   *
+   * @return the reference files, or {@code null} if none
+   */
+  default List<InputFile> getReferenceFiles() {
+    return null;
+  }
 }
