@@ -126,14 +126,21 @@ subprojects {
         url = uri(codeartifactRepositoryUrl(project))
         credentials {
           username = 'aws'
-          password = codeartifactAuthToken()
+          password = providers.environmentVariable('CODEARTIFACT_AUTH_TOKEN').orElse('')
         }
       }
     }
   }
 
   tasks.withType(PublishToMavenRepository).configureEach {
-    onlyIf { codeartifactAuthToken() && project.ext.publishToCodeArtifact }
+    onlyIf { project.ext.publishToCodeArtifact }
+    doFirst {
+      if (!codeartifactAuthToken()) {
+        throw new GradleException(
+          'CODEARTIFACT_AUTH_TOKEN is not set. Export a CodeArtifact token before running publish.'
+        )
+      }
+    }
   }
 
   rootProject.tasks["sonarqube"].dependsOn jacocoTestReport
