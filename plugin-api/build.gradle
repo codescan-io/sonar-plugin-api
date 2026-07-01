@@ -72,7 +72,7 @@ shadowJar {
 
 tasks["build"].dependsOn(shadowJar)
 
-artifactoryPublish.skip = false
+ext.publishToCodeArtifact = true
 
 publishing {
   publications {

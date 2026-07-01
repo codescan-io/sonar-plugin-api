@@ -1,12 +1,27 @@
 plugins {
   id 'com.github.hierynomus.license' version '0.16.1'
   id 'com.github.johnrengelman.shadow' version '7.1.2' apply false
-  id 'com.jfrog.artifactory' version '4.28.1'
   id 'org.sonarqube' version '3.3'
 }
 
+ext {
+  codeartifactReleaseUrl = 'https://autorabit-artifacts-domain-261140574810.d.codeartifact.us-east-1.amazonaws.com/maven/autorabit-libs-release/'
+  codeartifactSnapshotUrl = 'https://autorabit-artifacts-domain-261140574810.d.codeartifact.us-east-1.amazonaws.com/maven/autorabit-libs-snapshot/'
+}
+
+def codeartifactRepositoryUrl(project) {
+  def configuredUrl = System.getenv('CODEARTIFACT_REPOSITORY_URL')
+  if (configuredUrl) {
+    return configuredUrl
+  }
+  return project.version.toString().endsWith('SNAPSHOT') ? codeartifactSnapshotUrl : codeartifactReleaseUrl
+}
+
+def codeartifactAuthToken() {
+  System.getenv('CODEARTIFACT_AUTH_TOKEN') ?: ''
+}
+
 allprojects {
-  apply plugin: 'com.jfrog.artifactory'
   apply plugin: 'maven-publish'
 
   ext {
@@ -23,49 +38,23 @@ allprojects {
     def repository = project.hasProperty('qa') ? 'sonarsource-qa' : 'sonarsource'
     mavenCentral()
     maven {
+      url codeartifactRepositoryUrl(project)
+      credentials {
+        username = 'aws'
+        password = codeartifactAuthToken()
+      }
+    }
+    maven {
       url "https://repox.jfrog.io/repox/${repository}"
-      // The environment variables ARTIFACTORY_PRIVATE_USERNAME and ARTIFACTORY_PRIVATE_PASSWORD are used on QA env (Jenkins)
-      // On local box, please add artifactoryUsername and artifactoryPassword to ~/.gradle/gradle.properties
-      def artifactoryUsername = System.env.'ARTIFACTORY_USER' ?: (project.hasProperty('artifactoryUsername') ? project.getProperty('artifactoryUsername') : '')
-      def artifactoryPassword = System.env.'ARTIFACTORY_PWD' ?: (project.hasProperty('artifactoryPassword') ? project.getProperty('artifactoryPassword') : '')
-      if (artifactoryUsername && artifactoryPassword) {
+      def repoxUsername = System.env.'ARTIFACTORY_PRIVATE_USERNAME' ?: (project.hasProperty('artifactoryUsername') ? project.getProperty('artifactoryUsername') : '')
+      def repoxPassword = System.env.'ARTIFACTORY_PRIVATE_PASSWORD' ?: (project.hasProperty('artifactoryPassword') ? project.getProperty('artifactoryPassword') : '')
+      if (repoxUsername && repoxPassword) {
         credentials {
-          username = artifactoryUsername
-          password = artifactoryPassword
+          username = repoxUsername
+          password = repoxPassword
         }
       }
     }
-  }
-
-  artifactory {
-    clientConfig.setIncludeEnvVars(false)
-    clientConfig.setEnvVarsExcludePatterns('*password*,*PASSWORD*,*secret*,*MAVEN_CMD_LINE_ARGS*,sun.java.command,*token*,*TOKEN*,*LOGIN*,*login*,*key*,*KEY*,*signing*,*PWD*,*pwd*')
-    contextUrl = System.getenv('ARTIFACTORY_URL')?:'https://artifactory.autorabit.com/artifactory/'
-    publish {
-      repository {
-        repoKey = System.env.'ARTIFACTORY_CODESCAN_REPO' ?: (project.hasProperty('artifactoryRepo') ? project.getProperty('artifactoryRepo') : 'libs-release-local')
-        username = System.env.'ARTIFACTORY_USER' ?: (project.hasProperty('artifactoryUsername') ? project.getProperty('artifactoryUsername') : '')
-        password = System.env.'ARTIFACTORY_PWD' ?: (project.hasProperty('artifactoryPassword') ? project.getProperty('artifactoryPassword') : '')
-      }
-      defaults {
-        properties = [
-                'build.name': 'sonar-plugin-api',
-                'build.number': System.getenv('BUILD_NUMBER'),
-                'pr.branch.target': System.getenv('PULL_REQUEST_BRANCH_TARGET'),
-                'pr.number': System.getenv('PULL_REQUEST_NUMBER'),
-                'vcs.branch': System.getenv('GITHUB_BRANCH'),
-                'vcs.revision': System.getenv('GIT_COMMIT'),
-                'version': version
-        ]
-        publications('mavenJava')
-        publishPom = true
-        publishIvy = false
-      }
-    }
-    clientConfig.info.setBuildName('sonar-plugin-api')
-    clientConfig.info.setBuildNumber(System.getenv('BUILD_NUMBER'))
-    // The name of this variable is important because it's used by the delivery process when extracting version from Artifactory build info.
-    clientConfig.info.addEnvironmentProperty('PROJECT_VERSION', "${version}")
   }
 }
 
@@ -77,10 +66,11 @@ sonarqube {
 
 subprojects {
   apply plugin: 'com.github.hierynomus.license'
-  apply plugin: 'com.jfrog.artifactory'
   apply plugin: 'jacoco'
   apply plugin: 'java-library'
   apply plugin: 'maven-publish'
+
+  ext.publishToCodeArtifact = false
 
   java {
     toolchain {
@@ -129,6 +119,23 @@ subprojects {
     from javadoc.destinationDir
   }
 
+  publishing {
+    repositories {
+      maven {
+        name = 'codeartifact'
+        url = uri(codeartifactRepositoryUrl(project))
+        credentials {
+          username = 'aws'
+          password = codeartifactAuthToken()
+        }
+      }
+    }
+  }
+
+  tasks.withType(PublishToMavenRepository).configureEach {
+    onlyIf { codeartifactAuthToken() && project.ext.publishToCodeArtifact }
+  }
+
   rootProject.tasks["sonarqube"].dependsOn jacocoTestReport
 
   apply plugin: 'signing'
@@ -140,8 +147,8 @@ subprojects {
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     required {
       def branch = System.getenv()["CIRRUS_BRANCH"]
-      return (branch == 'master' || branch ==~ 'branch-[\\d.]+') &&
-              gradle.taskGraph.hasTask(":artifactoryPublish")
+      def publishingToCodeArtifact = gradle.taskGraph.allTasks.any { it.name == 'publish' }
+      return (branch == 'master' || branch ==~ 'branch-[\\d.]+') && publishingToCodeArtifact
     }
     sign publishing.publications
   }
@@ -149,10 +156,10 @@ subprojects {
   tasks.withType(Sign) {
     onlyIf {
       def branch = System.getenv()["CIRRUS_BRANCH"]
-      return !artifactoryPublish.skip &&
+      def publishingToCodeArtifact = gradle.taskGraph.allTasks.any { it.name == 'publish' }
+      return project.ext.publishToCodeArtifact &&
               (branch == 'master' || branch ==~ 'branch-[\\d.]+') &&
-              gradle.taskGraph.hasTask(":artifactoryPublish")
+              publishingToCodeArtifact
     }
   }
 }
-
