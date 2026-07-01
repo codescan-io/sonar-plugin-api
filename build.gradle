@@ -70,7 +70,7 @@ subprojects {
   apply plugin: 'java-library'
   apply plugin: 'maven-publish'
 
-  ext.publishToCodeArtifact = false
+  ext.publishToCodeArtifact = true
 
   java {
     toolchain {
