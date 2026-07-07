@@ -84,6 +84,13 @@ public interface NewIssue {
   NewIssue setQuickFixAvailable(boolean quickFixAvailable);
 
   /**
+   * Register whether an AI-generated fix is supported for this issue.
+   * Defaults to {@code true} when not called.
+   * @since 10.14-CODESCAN
+   */
+  NewIssue setAiFixSupported(boolean aiFixSupported);
+
+  /**
    * Register a flow for this issue. A flow is an ordered list of issue locations that help to understand the issue.
    * It should be a <b>path that backtracks the issue from its primary location to the start of the flow</b>. 
    * Several flows can be registered. The type of the flow will be undefined.

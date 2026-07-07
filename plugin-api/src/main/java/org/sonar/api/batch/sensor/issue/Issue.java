@@ -95,6 +95,12 @@ public interface Issue extends IIssue {
   boolean isQuickFixAvailable();
 
   /**
+   * Is an AI-generated fix supported for this issue.
+   * @since 10.14-CODESCAN
+   */
+  boolean isAiFixSupported();
+
+  /**
    * The optional rule description section context key, in case the analyzer detects a context for the issue.
    * The key will match the one present in {@link org.sonar.api.server.rule.Context#getKey()}.
    * @since 9.8
