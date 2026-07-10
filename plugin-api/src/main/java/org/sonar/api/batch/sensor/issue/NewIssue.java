@@ -83,9 +83,11 @@ public interface NewIssue {
    */
   NewIssue setQuickFixAvailable(boolean quickFixAvailable);
 
+  NewIssue setVariableType(@Nullable String variableType);
+
   /**
    * Register a flow for this issue. A flow is an ordered list of issue locations that help to understand the issue.
-   * It should be a <b>path that backtracks the issue from its primary location to the start of the flow</b>. 
+   * It should be a <b>path that backtracks the issue from its primary location to the start of the flow</b>.
    * Several flows can be registered. The type of the flow will be undefined.
    * @since 5.2
    */
