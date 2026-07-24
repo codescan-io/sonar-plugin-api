@@ -57,7 +57,8 @@ processResources {
 
 shadowJar {
   archivesBaseName = 'sonar-plugin-api'
-  archiveClassifier = ''
+  // Empty classifier makes this the main artifact (same path the thin jar would use).
+  archiveClassifier.set('')
   configurations = [project.configurations.runtimeClasspath]
   minimize {
     exclude(project(':check-api'))
@@ -70,7 +71,15 @@ shadowJar {
   exclude 'META-INF/**/module-info.class'
 }
 
-tasks["build"].dependsOn(shadowJar)
+// Shadow jar is the published main artifact. Disable the thin jar so it does not
+// collide on the same output path (Gradle 8 fails publish otherwise).
+tasks.named('jar').configure {
+  enabled = false
+}
+
+tasks.named('build').configure {
+  dependsOn(shadowJar)
+}
 
 ext.publishToCodeArtifact = true
 
@@ -103,9 +112,16 @@ publishing {
           }
         }
       }
-      artifact source: shadowJar, classifier: null
-      artifact sourcesJar
-      artifact javadocJar
+      // builtBy wires the task dependency that Gradle 8 requires for publish.
+      artifact(shadowJar) {
+        builtBy(shadowJar)
+      }
+      artifact(sourcesJar) {
+        builtBy(sourcesJar)
+      }
+      artifact(javadocJar) {
+        builtBy(javadocJar)
+      }
       pom.withXml {
         def dependenciesNode = asNode().appendNode('dependencies')
         def dependencyNode = dependenciesNode.appendNode('dependency')
@@ -115,6 +131,10 @@ publishing {
       }
     }
   }
+}
+
+tasks.withType(PublishToMavenRepository).configureEach {
+  dependsOn shadowJar, sourcesJar, javadocJar
 }
 
 test {
