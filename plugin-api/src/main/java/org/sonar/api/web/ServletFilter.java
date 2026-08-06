@@ -36,7 +36,7 @@ import org.sonar.api.server.ServerSide;
 @ServerSide
 @ExtensionPoint
 @Deprecated(forRemoval = true, since = "9.16")
-public abstract class ServletFilter implements javax.servlet.Filter {
+public abstract class ServletFilter implements jakarta.servlet.Filter {
 
   /**
    * Override to change URL. Default is /*
