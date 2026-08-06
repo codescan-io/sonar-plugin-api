@@ -86,6 +86,7 @@ public class Rule {
   private Date updatedAt;
   private String tags;
   private String systemTags;
+  private boolean aiCodeFixEnabled = false;
 
   private Rule() {
   }
@@ -378,6 +379,15 @@ public class Rule {
     return this;
   }
 
+  public boolean getAiCodeFixEnabled() {
+    return aiCodeFixEnabled;
+  }
+
+  public Rule setAiCodeFixEnabled(boolean aiCodeFixEnabled) {
+    this.aiCodeFixEnabled = aiCodeFixEnabled;
+    return this;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (!(obj instanceof Rule)) {
@@ -411,6 +421,7 @@ public class Rule {
       .append("plugin", pluginName)
       .append("severity", priority)
       .append("isTemplate", isTemplate())
+      .append("aiCodeFixEnabled", aiCodeFixEnabled)
       .append("status", status)
       .append("language", language)
       .append("template", template)
