@@ -10,7 +10,7 @@ allprojects {
   // AWS CodeArtifact (migrated off artifactory.autorabit.com). The auth token is provided by
   // CODEARTIFACT_AUTH_TOKEN (OIDC in CI, `aws sso` locally via scripts/codeartifact-bootstrap.sh).
   ext.codeartifactUrl = System.getenv('CODEARTIFACT_MAVEN_URL') ?:
-    'https://autorabit-artifacts-domain-261140574810.d.codeartifact.us-east-1.amazonaws.com/maven/autorabit-libs-release/'
+    'https://autorabit-artifacts-domain-261140574810.d.codeartifact.us-east-1.amazonaws.com/maven/codescan-libs-release/'
   ext.codeartifactToken = System.getenv('CODEARTIFACT_AUTH_TOKEN') ?:
     (project.hasProperty('codeartifactToken') ? project.getProperty('codeartifactToken') : '')
   // Opt-in publishing flag (replaces the former `artifactoryPublish.skip`).
