@@ -18,6 +18,8 @@ dependencies {
   testRuntimeOnly libs.jupiter.engine
 }
 
+ext.publishToCodeArtifact = true
+
 publishing {
   publications {
     mavenJava(MavenPublication) {
@@ -48,12 +50,21 @@ publishing {
           }
         }
       }
-      artifact sourcesJar
-      artifact javadocJar
+      artifact(sourcesJar) {
+        builtBy(sourcesJar)
+      }
+      artifact(javadocJar) {
+        builtBy(javadocJar)
+      }
     }
   }
-  test {
-    // Enabling the JUnit Platform (see https://github.com/junit-team/junit5-samples/tree/master/junit5-migration-gradle)
-    useJUnitPlatform()
-  }
+}
+
+tasks.withType(PublishToMavenRepository).configureEach {
+  dependsOn jar, sourcesJar, javadocJar
+}
+
+test {
+  // Enabling the JUnit Platform (see https://github.com/junit-team/junit5-samples/tree/master/junit5-migration-gradle)
+  useJUnitPlatform()
 }
