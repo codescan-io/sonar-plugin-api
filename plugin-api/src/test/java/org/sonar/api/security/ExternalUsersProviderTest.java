@@ -20,7 +20,7 @@
 package org.sonar.api.security;
 
 import com.google.common.base.Preconditions;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.sonar.api.server.http.HttpRequest;
 
