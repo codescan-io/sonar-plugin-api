@@ -224,6 +224,7 @@ public class RequestTest {
     assertThat(underTest.paramAsBoolean("a_boolean")).isNull();
     assertThat(underTest.paramAsInt("a_number")).isNull();
     assertThat(underTest.paramAsLong("a_number")).isNull();
+    assertThat(underTest.paramAsEncoded("an_encoded_string")).isNull();
   }
 
   @Test
@@ -238,6 +239,52 @@ public class RequestTest {
     assertThatThrownBy(() -> request.paramAsInt("a_number"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("The 'a_number' parameter cannot be parsed as an integer value: not-an-int");
+  }
+
+  @Test
+  @UseDataProvider("base64UrlValues")
+  public void paramAsEncoded_decodes_base64url(String encoded, String expected) {
+    assertThat(underTest.setParam("an_encoded_string", encoded).paramAsEncoded("an_encoded_string")).isEqualTo(expected);
+  }
+
+  @DataProvider
+  public static Object[][] base64UrlValues() {
+    return new Object[][] {
+      // a="^(Account|Contact)$";b=x
+      {"YT0iXihBY2NvdW50fENvbnRhY3QpJCI7Yj14", "a=\"^(Account|Contact)$\";b=x"},
+      // "?>?" uses '_' where standard base64 uses '/'
+      {"Pz4_", "?>?"},
+      // padding is optional
+      {"YWI", "ab"},
+      {"YWI=", "ab"},
+      // non-ASCII text is read as UTF-8
+      {"w6nDqA", "\u00e9\u00e8"},
+    };
+  }
+
+  @Test
+  public void paramAsEncoded_returns_null_when_empty() {
+    assertThat(underTest.setParam("an_encoded_string", "").paramAsEncoded("an_encoded_string")).isNull();
+  }
+
+  @Test
+  @UseDataProvider("invalidBase64UrlValues")
+  public void fail_when_param_is_not_base64url(String encoded) {
+    Request request = underTest.setParam("an_encoded_string", encoded);
+    assertThatThrownBy(() -> request.paramAsEncoded("an_encoded_string"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("The 'an_encoded_string' parameter is not valid base64url");
+  }
+
+  @DataProvider
+  public static Object[][] invalidBase64UrlValues() {
+    return new Object[][] {
+      // standard base64 alphabet
+      {"Pz4/"},
+      {"a=\"^(Account|Contact)$\""},
+      // 0xFF is not UTF-8
+      {"_w"},
+    };
   }
 
   @Test
@@ -734,6 +781,7 @@ public class RequestTest {
       action.createParam("a_enum");
       action.createParam("a_date");
       action.createParam("a_datetime");
+      action.createParam("an_encoded_string");
 
       action.createParam("a_required_string").setRequired(true);
       action.createParam("a_required_boolean").setRequired(true);

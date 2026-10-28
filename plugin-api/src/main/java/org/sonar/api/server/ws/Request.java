@@ -21,7 +21,12 @@ package org.sonar.api.server.ws;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -166,6 +171,22 @@ public abstract class Request {
     return s == null ? null : parseLong(key, s);
   }
 
+  /**
+   * Returns the value of a base64url-encoded (RFC 4648 §5, padding optional) parameter, decoded as UTF-8 text.
+   * Returns {@code null} if the parameter is missing or empty.
+   *
+   * @throws java.lang.IllegalArgumentException if the value is not base64url or does not decode to UTF-8 text
+   * @since 10.14
+   */
+  @CheckForNull
+  public String paramAsEncoded(String key) {
+    String value = param(key);
+    if (value == null || value.isEmpty()) {
+      return null;
+    }
+    return decodeBase64Url(key, value);
+  }
+
   @CheckForNull
   public <E extends Enum<E>> E paramAsEnum(String key, Class<E> enumClass) {
     String s = param(key);
@@ -242,6 +263,19 @@ public abstract class Request {
       throw new IllegalArgumentException(format("The '%s' parameter cannot be parsed as a long value: %s", key, value));
     }
   }
+
+  private static String decodeBase64Url(String key, String value) {
+        try {
+            byte[] decoded = Base64.getUrlDecoder().decode(value);
+            return StandardCharsets.UTF_8.newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(decoded))
+                    .toString();
+        } catch (IllegalArgumentException | CharacterCodingException exception) {
+            throw new IllegalArgumentException(format("The '%s' parameter is not valid base64url", key));
+        }
+    }
 
   public <T> Param<T> getParam(String key, BiFunction<Request, String, T> retrieveAndValidate) {
     String param = this.param(key);
